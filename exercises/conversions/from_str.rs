@@ -11,7 +11,6 @@ struct Person {
     age: usize,
 }
 
-// I AM NOT DONE
 
 // Steps:
 // 1. If the length of the provided string is 0, an error should be returned
@@ -24,8 +23,31 @@ struct Person {
 // If everything goes well, then return a Result of a Person object
 
 impl FromStr for Person {
-    type Err = Box<dyn error::Error>;
+    type Err = String;//Box<dyn error::Error>; 
+    // ↑良くない解決方法
+
     fn from_str(s: &str) -> Result<Person, Self::Err> {
+        // if s.is_empty(){
+        //     //ここのエラー生成どうしよう。。ParseEmptyErrorとか作る？あるいはParsePersonError
+        //     return Err(Box::new());
+        // }
+        let split : Vec<&str> = s.split(",").collect();
+        if split.len() != 2 {
+            return Err("invalid!!".to_string());
+        }
+        for st in &split {
+            if st.is_empty() {
+                return Err("empty str".to_string());
+            }
+        }
+
+        let n = split[0].to_string();
+        let a = split[1].parse::<usize>();
+        if a.is_err(){
+            return Err("age is not a number".to_string());
+        }
+        let a = a.unwrap();
+        Ok(Person{name: n, age: a})
     }
 }
 
